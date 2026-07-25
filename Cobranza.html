@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827"><title>Cobranza · 20–25 Jul</title>
+<style>
+:root{--bg:#f3f4f6;--card:#fff;--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--ok:#15803d;--okbg:#dcfce7;--amber:#b45309;--amberbg:#fef3c7;--blue:#2563eb}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:820px;margin:auto;padding-bottom:40px}
+header{position:sticky;top:0;z-index:10;background:#111827;color:#fff;padding:14px 16px}
+h1{margin:0;font-size:18px;font-weight:800}
+.counter{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap}
+.counter div{flex:1;min-width:120px;background:#1f2937;border-radius:12px;padding:10px 12px}
+.counter small{display:block;color:#9ca3af;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.counter b{font-size:22px}
+.bar{height:8px;background:#374151;border-radius:99px;margin-top:10px;overflow:hidden}
+.bar > i{display:block;height:100%;background:#22c55e;width:0;transition:width .3s}
+main{padding:12px}
+.floor{background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:12px;overflow:hidden}
+.floor > summary{list-style:none;cursor:pointer;padding:15px 16px;font-weight:800;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.floor > summary::-webkit-details-marker{display:none}
+.floor > summary:before{content:"▶";font-size:12px;color:var(--muted);margin-right:6px}
+.floor[open] > summary:before{content:"▼"}
+.fmeta{font-size:13px;color:var(--muted);font-weight:700}
+.store{border-top:1px solid var(--line)}
+.storehead{display:flex;align-items:center;gap:12px;padding:13px 16px}
+.check{width:34px;height:34px;flex:0 0 auto;border:2px solid #9ca3af;border-radius:9px;display:grid;place-items:center;background:#fff;font-size:20px;color:#fff}
+.store.pagado .check{background:var(--ok);border-color:var(--ok)}
+.store.parcial .check{background:var(--amber);border-color:var(--amber)}
+.sname{flex:1;min-width:0;font-weight:800;font-size:16px}
+.store.pagado .sname{text-decoration:line-through;color:var(--muted)}
+.samt{font-weight:800;font-size:16px;text-align:right;white-space:nowrap}
+.stag{font-size:12px;font-weight:800;padding:2px 8px;border-radius:99px;margin-left:8px}
+.store.parcial .stag{background:var(--amberbg);color:var(--amber)}
+.store.pagado .stag{background:var(--okbg);color:var(--ok)}
+.detail{display:none;padding:0 16px 16px 62px;font-size:14px}
+.store.open .detail{display:block}
+.detail .line{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line);color:#374151}
+.detail .anterior{color:var(--amber);font-weight:700}
+.pay{margin-top:12px;background:#f9fafb;border:1px solid var(--line);border-radius:12px;padding:12px}
+.pay label{font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.payrow{display:flex;gap:8px;margin-top:8px;align-items:center}
+.payrow input{flex:1;min-width:0;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font-size:18px;font-weight:800;text-align:center}
+.btn{border:0;border-radius:10px;padding:12px 14px;font-weight:800;font-size:14px;cursor:pointer}
+.btn.exact{background:var(--ok);color:#fff}.btn.clear{background:#e5e7eb;color:#374151}
+.result{margin-top:10px;font-weight:800;font-size:15px}
+.result.vuelto{color:var(--blue)}.result.saldo{color:var(--amber)}
+.reset{width:100%;margin-top:16px;background:#fff;border:1px solid var(--line);color:#b91c1c;border-radius:12px;padding:14px;font-weight:800;cursor:pointer}
+</style></head>
+<body><div class="wrap">
+<header>
+  <h1>Cobranza · semana 20–25 Jul</h1>
+  <div class="counter">
+    <div><small>Cobrado</small><b id="cCobrado">S/ 0</b></div>
+    <div><small>Falta</small><b id="cFalta">S/ 0</b></div>
+    <div><small>Tiendas</small><b id="cTiendas">0 / 0</b></div>
+  </div>
+  <div class="bar"><i id="cBar"></i></div>
+</header>
+<main id="app"></main>
+</div>
+<script>
+const DATA = {"grupos": [{"floor": "1", "label": "Piso 1", "stores": [{"name": "101A", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "102CB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "103B", "anterior": 0, "days": {"Mar 21": 12, "Vie 24": 12}, "total": 24, "paid": false}, {"name": "103CB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "103DD", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "108CB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "110CB", "anterior": 0, "days": {"Lun 20": 17.5, "Mar 21": 21, "Mié 22": 12, "Vie 24": 12}, "total": 62.5, "paid": false}, {"name": "111C", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "111CB", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "113AB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "115AB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "134B", "anterior": 0, "days": {"Mié 22": 12}, "total": 12, "paid": false}, {"name": "137B", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 24, "Vie 24": 12, "Sáb 25": 12}, "total": 60, "paid": false}, {"name": "142D", "anterior": 0, "days": {"Mar 21": 12}, "total": 12, "paid": false}, {"name": "143D", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "Amparo Gisset", "anterior": 0, "days": {"Lun 20": 3}, "total": 3, "paid": false}, {"name": "Chama Ever", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "Fermin", "anterior": 0, "days": {"Sáb 25": 18}, "total": 18, "paid": false}, {"name": "Gisset", "anterior": 19.5, "days": {"Mié 22": 12, "Vie 24": 12}, "total": 43.5, "paid": false}, {"name": "Gisset Amparo", "anterior": 0, "days": {"Mié 22": 5}, "total": 5, "paid": false}, {"name": "Gisset Flor", "anterior": 0, "days": {"Mié 22": 2.5}, "total": 2.5, "paid": false}, {"name": "Laura", "anterior": 0, "days": {"Sáb 25": 18}, "total": 18, "paid": false}, {"name": "Nichi", "anterior": 0, "days": {"Mar 21": 22, "Mié 22": 24, "Vie 24": 24, "Sáb 25": 36}, "total": 106, "paid": false}, {"name": "Tombo", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}]}, {"floor": "2", "label": "Piso 2", "stores": [{"name": "202B", "anterior": 0, "days": {"Lun 20": 10.5}, "total": 10.5, "paid": false}, {"name": "204D", "anterior": 0, "days": {"Lun 20": 11, "Sáb 25": 11}, "total": 22, "paid": false}, {"name": "206BB", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 11, "Mié 22": 11, "Vie 24": 11, "Sáb 25": 11}, "total": 56, "paid": false}, {"name": "207AB", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "207BB", "anterior": 0, "days": {"Vie 24": 24}, "total": 24, "paid": false}, {"name": "209C", "anterior": 0, "days": {"Mar 21": 11, "Mié 22": 11, "Vie 24": 11, "Sáb 25": 11}, "total": 44, "paid": false}, {"name": "209CB", "anterior": 0, "days": {"Mié 22": 12, "Vie 24": 11, "Sáb 25": 42}, "total": 65, "paid": false}, {"name": "210AB", "anterior": 0, "days": {"Sáb 25": 22}, "total": 22, "paid": false}, {"name": "215D", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12}, "total": 24, "paid": false}, {"name": "231D", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "233B", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "236B", "anterior": 0, "days": {"Mar 21": 5}, "total": 5, "paid": false}, {"name": "239B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "241B I", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "245D", "anterior": 0, "days": {"Lun 20": 12, "Sáb 25": 11}, "total": 23, "paid": false}, {"name": "246D", "anterior": 0, "days": {"Lun 20": 3, "Mié 22": 3, "Vie 24": 10}, "total": 16, "paid": false}, {"name": "250B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "253B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "257B", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "259B", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 11, "Mié 22": 11, "Vie 24": 11}, "total": 45, "paid": false}, {"name": "266B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "269B", "anterior": 0, "days": {"Mar 21": 11, "Mié 22": 12, "Sáb 25": 12}, "total": 35, "paid": false}, {"name": "276B", "anterior": 0, "days": {"Lun 20": 12}, "total": 12, "paid": false}, {"name": "A209AB", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "Celia", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 28, "Mié 22": 15, "Vie 24": 12, "Sáb 25": 12}, "total": 79, "paid": false}, {"name": "Covins", "anterior": 0, "days": {"Lun 20": 18}, "total": 18, "paid": false}, {"name": "Pers 209BB", "anterior": 12, "days": {}, "total": 12, "paid": false}, {"name": "Pini", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}]}, {"floor": "3", "label": "Piso 3", "stores": [{"name": "303B", "anterior": 568, "days": {"Lun 20": 37.5, "Mar 21": 24, "Mié 22": 25.5, "Vie 24": 33.5, "Sáb 25": 24}, "total": 712.5, "paid": false}, {"name": "307BB", "anterior": 31, "days": {"Lun 20": 5.5, "Vie 24": 6}, "total": 42.5, "paid": false}, {"name": "307CB", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12}, "total": 36, "paid": false}, {"name": "308A", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "308AB", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 11}, "total": 23, "paid": false}, {"name": "308B", "anterior": 0, "days": {"Mié 22": 24, "Vie 24": 12, "Sáb 25": 12}, "total": 48, "paid": false}, {"name": "308BB", "anterior": 0, "days": {"Mié 22": 6, "Sáb 25": 12}, "total": 18, "paid": false}, {"name": "309B", "anterior": 31, "days": {"Lun 20": 25.5, "Mar 21": 24, "Mié 22": 24, "Sáb 25": 36}, "total": 140.5, "paid": false}, {"name": "309BB", "anterior": 0, "days": {"Mar 21": 17}, "total": 17, "paid": false}, {"name": "309CB", "anterior": 836.5, "days": {"Lun 20": 12, "Mar 21": 12, "Sáb 25": 12}, "total": 872.5, "paid": false}, {"name": "313C", "anterior": 0, "days": {"Lun 20": 12, "Mié 22": 12, "Vie 24": 17.5}, "total": 41.5, "paid": false}, {"name": "315D", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "317B", "anterior": 0, "days": {"Lun 20": 17, "Mié 22": 13.5}, "total": 30.5, "paid": false}, {"name": "317C", "anterior": 0, "days": {"Lun 20": 12}, "total": 12, "paid": false}, {"name": "317D", "anterior": 0, "days": {"Lun 20": 18}, "total": 18, "paid": false}, {"name": "319C", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "319CB", "anterior": 0, "days": {"Lun 20": 11, "Mar 21": 11, "Mié 22": 11, "Vie 24": 11, "Sáb 25": 11}, "total": 55, "paid": false}, {"name": "322D", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "323C", "anterior": 0, "days": {"Lun 20": 12, "Mié 22": 12}, "total": 24, "paid": false}, {"name": "324D", "anterior": 0, "days": {"Mar 21": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "326C", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "330B", "anterior": 43, "days": {}, "total": 43, "paid": false}, {"name": "333B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "338B", "anterior": 0, "days": {"Mar 21": 16, "Vie 24": 12, "Sáb 25": 23}, "total": 51, "paid": false}, {"name": "338BB", "anterior": 66, "days": {}, "total": 66, "paid": false}, {"name": "354B", "anterior": 9.5, "days": {}, "total": 9.5, "paid": false}, {"name": "357D", "anterior": 30, "days": {}, "total": 30, "paid": false}, {"name": "368B", "anterior": 0, "days": {"Sáb 25": 48}, "total": 48, "paid": false}, {"name": "372B", "anterior": 0, "days": {"Vie 24": 24}, "total": 24, "paid": false}, {"name": "373B", "anterior": 0, "days": {"Vie 24": 8}, "total": 8, "paid": false}, {"name": "Amel", "anterior": 0, "days": {"Mié 22": 6}, "total": 6, "paid": false}, {"name": "Baño 3er piso", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "Bella", "anterior": 0, "days": {"Mar 21": 12, "Sáb 25": 21.5}, "total": 33.5, "paid": false}, {"name": "Carlos", "anterior": 175, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 12}, "total": 235, "paid": false}, {"name": "Carmen", "anterior": 5.5, "days": {}, "total": 5.5, "paid": false}, {"name": "Eli", "anterior": 0, "days": {"Sáb 25": 11}, "total": 11, "paid": false}, {"name": "Eliane", "anterior": 0, "days": {"Mar 21": 9}, "total": 9, "paid": false}, {"name": "Ever", "anterior": 0, "days": {"Mar 21": 5}, "total": 5, "paid": false}, {"name": "Fredy", "anterior": 31, "days": {}, "total": 31, "paid": false}, {"name": "Gaston Carmen", "anterior": 0, "days": {"Lun 20": 11}, "total": 11, "paid": false}, {"name": "Hayde", "anterior": 0, "days": {"Mié 22": 3}, "total": 3, "paid": false}, {"name": "Hilos", "anterior": 0, "days": {"Mié 22": 22, "Vie 24": 11}, "total": 33, "paid": false}, {"name": "Isabel", "anterior": 0, "days": {"Mar 21": 12}, "total": 12, "paid": false}, {"name": "Jose", "anterior": 20, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 12}, "total": 80, "paid": false}, {"name": "Junior", "anterior": 0, "days": {"Sáb 25": 15}, "total": 15, "paid": false}, {"name": "Magaly", "anterior": 16, "days": {}, "total": 16, "paid": false}, {"name": "Patty", "anterior": 76, "days": {}, "total": 76, "paid": false}, {"name": "Ronald", "anterior": 21, "days": {"Lun 20": 15, "Mar 21": 6.5, "Vie 24": 3}, "total": 45.5, "paid": false}, {"name": "Rosita", "anterior": 30, "days": {"Lun 20": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 18}, "total": 84, "paid": false}, {"name": "Sobrino Maribel", "anterior": 0, "days": {"Mar 21": 3}, "total": 3, "paid": true}, {"name": "Walter", "anterior": 0, "days": {"Lun 20": 5, "Mié 22": 5}, "total": 10, "paid": false}, {"name": "Yovana Yovera", "anterior": 0, "days": {"Mar 21": 7, "Sáb 25": 12}, "total": 19, "paid": false}]}, {"floor": "4", "label": "Piso 4", "stores": [{"name": "406A", "anterior": 0, "days": {"Mié 22": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "409A", "anterior": 0, "days": {"Vie 24": 11.5, "Sáb 25": 12}, "total": 23.5, "paid": false}, {"name": "411A", "anterior": 0, "days": {"Mié 22": 12}, "total": 12, "paid": false}, {"name": "415A", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "416BB", "anterior": 0, "days": {"Mié 22": 12, "Vie 24": 12}, "total": 24, "paid": false}, {"name": "438E", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 24, "Vie 24": 12, "Sáb 25": 23}, "total": 71, "paid": false}, {"name": "439E", "anterior": 0, "days": {"Mié 22": 3}, "total": 3, "paid": false}, {"name": "442E", "anterior": 0, "days": {"Lun 20": 22, "Mar 21": 11, "Mié 22": 22, "Sáb 25": 11}, "total": 66, "paid": false}, {"name": "4to Roxana", "anterior": 30, "days": {}, "total": 30, "paid": false}, {"name": "Norma", "anterior": 0, "days": {"Mié 22": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "Uchu", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12}, "total": 36, "paid": false}]}, {"floor": "Fuera", "label": "Fuera de galería", "stores": [{"name": "Canepa 131", "anterior": 0, "days": {"Mar 21": 12, "Mié 22": 12}, "total": 24, "paid": false}, {"name": "Canepa 5", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "Chavez", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "Leo Galerias", "anterior": 0, "days": {"Mié 22": 26}, "total": 26, "paid": false}, {"name": "Mezanine", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 24}, "total": 72, "paid": false}, {"name": "Rosa", "anterior": 0, "days": {"Mar 21": 22, "Mié 22": 22, "Vie 24": 11}, "total": 55, "paid": false}]}]};
+const KEY='cobro_2026-07-20';
+let state=JSON.parse(localStorage.getItem(KEY)||'{}');
+const money=n=>'S/ '+(Math.round(n*100)/100).toLocaleString('es-PE',{minimumFractionDigits:(n%1?2:0),maximumFractionDigits:2});
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function st(name){return state[name]||{status:'pendiente',recibido:0}}
+DATA.grupos.forEach(g=>g.stores.forEach(s=>{if(s.paid&&!state[s.name])state[s.name]={status:'pagado',recibido:s.total}}));save();
+function cobradoDe(s){const x=st(s.name);if(x.status==='pagado')return s.total;if(x.status==='parcial')return x.recibido;return 0}
+function render(){
+  const app=document.getElementById('app');app.innerHTML='';
+  let all=[],grand=0,cob=0,done=0;
+  DATA.grupos.forEach(g=>g.stores.forEach(s=>{all.push(s);grand+=s.total;cob+=cobradoDe(s);const q=st(s.name).status;if(q==='pagado'||q==='parcial')done++}));
+  DATA.grupos.forEach(g=>{
+    const pend=g.stores.reduce((a,s)=>a+(s.total-cobradoDe(s)),0);
+    const falta=g.stores.filter(s=>st(s.name).status!=='pagado').length;
+    const d=document.createElement('details');d.className='floor';
+    d.innerHTML='<summary><span>'+g.label+'</span><span class="fmeta">'+money(pend)+' · faltan '+falta+'</span></summary>';
+    g.stores.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(s=>{
+      const x=st(s.name);const saldo=s.total-x.recibido;
+      const div=document.createElement('div');div.className='store '+x.status;div.dataset.name=s.name;
+      let tag='';if(x.status==='pagado')tag='<span class="stag">Pagó</span>';else if(x.status==='parcial')tag='<span class="stag">Saldo '+money(saldo)+'</span>';
+      let det='';Object.entries(s.days).forEach(([k,v])=>det+='<div class="line"><span>'+k+'</span><span>'+money(v)+'</span></div>');
+      if(s.anterior>0)det+='<div class="line anterior"><span>Saldo anterior</span><span>'+money(s.anterior)+'</span></div>';
+      det+='<div class="line" style="font-weight:800;color:#111827"><span>Total</span><span>'+money(s.total)+'</span></div>';
+      let resHtml='';
+      if(x.status==='pagado'&&x.recibido>s.total)resHtml='<div class="result vuelto">Vuelto: '+money(x.recibido-s.total)+'</div>';
+      else if(x.status==='parcial')resHtml='<div class="result saldo">Falta: '+money(saldo)+'</div>';
+      div.innerHTML='<div class="storehead"><div class="check" data-check>'+(x.status==='pagado'?'✓':x.status==='parcial'?'½':'')+'</div>'+
+        '<div class="sname" data-open>'+s.name+tag+'</div><div class="samt">'+money(s.total)+'</div></div>'+
+        '<div class="detail">'+det+'<div class="pay"><label>¿Con cuánto pagó?</label><div class="payrow">'+
+        '<input type="number" inputmode="decimal" placeholder="0" value="'+(x.recibido||'')+'" data-input>'+
+        '<button class="btn exact" data-exact>Pagó exacto</button><button class="btn clear" data-clear>Borrar</button></div>'+resHtml+'</div></div>';
+      d.appendChild(div);
+    });
+    app.appendChild(d);
+  });
+  const rb=document.createElement('button');rb.className='reset';rb.textContent='Cerrar cobranza (reiniciar todo)';
+  rb.onclick=()=>{if(confirm('¿Borrar todos los pagos y empezar de nuevo?')){state={};DATA.grupos.forEach(g=>g.stores.forEach(s=>{if(s.paid)state[s.name]={status:'pagado',recibido:s.total}}));save();render()}};
+  app.appendChild(rb);
+  document.getElementById('cCobrado').textContent=money(cob);
+  document.getElementById('cFalta').textContent=money(grand-cob);
+  document.getElementById('cTiendas').textContent=done+' / '+all.length;
+  document.getElementById('cBar').style.width=(grand?Math.min(100,cob/grand*100):0)+'%';
+}
+function reopen(name){const el=document.querySelector('.store[data-name="'+CSS.escape(name)+'"]');if(el)el.classList.add('open')}
+document.getElementById('app').addEventListener('click',e=>{
+  const store=e.target.closest('.store');if(!store)return;const name=store.dataset.name;
+  const s=DATA.grupos.flatMap(g=>g.stores).find(x=>x.name===name);
+  if(e.target.closest('[data-check]')){const c=st(name);state[name]=c.status==='pagado'?{status:'pendiente',recibido:0}:{status:'pagado',recibido:s.total};save();render();return}
+  if(e.target.closest('[data-open]')){store.classList.toggle('open');return}
+  if(e.target.closest('[data-exact]')){state[name]={status:'pagado',recibido:s.total};save();render();reopen(name);return}
+  if(e.target.closest('[data-clear]')){state[name]={status:'pendiente',recibido:0};save();render();reopen(name);return}
+});
+document.getElementById('app').addEventListener('change',e=>{
+  const inp=e.target.closest('[data-input]');if(!inp)return;
+  const name=e.target.closest('.store').dataset.name;
+  const s=DATA.grupos.flatMap(g=>g.stores).find(x=>x.name===name);
+  const r=parseFloat(inp.value)||0;
+  if(r<=0)state[name]={status:'pendiente',recibido:0};
+  else if(r>=s.total)state[name]={status:'pagado',recibido:r};
+  else state[name]={status:'parcial',recibido:r};
+  save();render();reopen(name);
+});
+render();
+</script></body></html>

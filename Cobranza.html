@@ -45,6 +45,7 @@ main{padding:12px}
 .result{margin-top:10px;font-weight:800;font-size:15px}
 .result.vuelto{color:var(--blue)}.result.saldo{color:var(--amber)}
 .reset{width:100%;margin-top:16px;background:#fff;border:1px solid var(--line);color:#b91c1c;border-radius:12px;padding:14px;font-weight:800;cursor:pointer}
+.tools{margin-bottom:12px}.btn.add{width:100%;background:#2563eb;color:#fff}.addform{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid label{font-size:12px;font-weight:800;color:var(--muted)}.grid input,.grid select,.notearea,.promise{width:100%;margin-top:5px;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;color:var(--ink);background:#fff}.grid .wide{grid-column:1/-1}.formactions{display:flex;gap:8px;margin-top:10px}.notearea{min-height:65px;resize:vertical}.followup{margin-top:10px}.followup label{display:block;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase}.followrow{display:flex;gap:8px;margin-top:7px;align-items:center}.followrow .promise{margin:0;flex:1}.btn.later{background:#fef3c7;color:#92400e}.store.otro_dia .check{background:#f59e0b;border-color:#f59e0b}.store.otro_dia .stag{background:#fef3c7;color:#92400e}@media(max-width:560px){.grid{grid-template-columns:1fr}.grid .wide{grid-column:auto}.payrow,.followrow{flex-wrap:wrap}.payrow input{flex-basis:100%}}
 </style></head>
 <body><div class="wrap">
 <header>
@@ -56,71 +57,119 @@ main{padding:12px}
   </div>
   <div class="bar"><i id="cBar"></i></div>
 </header>
-<main id="app"></main>
+<main>
+  <section class="tools">
+    <button class="btn add" id="showAdd">＋ Agregar cuenta</button>
+    <form id="addForm" class="addform" hidden>
+      <div class="grid">
+        <label>Nombre o tienda<input id="newName" required placeholder="Ej. Gisset Flor"></label>
+        <label>Importe<input id="newAmount" required type="number" min="0.01" step="0.01" inputmode="decimal" placeholder="0"></label>
+        <label>Ubicación<select id="newFloor"><option value="1">Piso 1</option><option value="2">Piso 2</option><option value="3">Piso 3</option><option value="4">Piso 4</option><option value="Fuera">Fuera de galería</option></select></label>
+        <label>Concepto<input id="newConcept" placeholder="Menú, saldo, adicional..."></label>
+        <label class="wide">Observación<input id="newNote" placeholder="Ej. dijo que paga el lunes"></label>
+      </div>
+      <div class="formactions"><button class="btn exact" type="submit">Guardar cuenta</button><button class="btn clear" type="button" id="cancelAdd">Cancelar</button></div>
+    </form>
+  </section>
+  <div id="app"></div>
+</main>
 </div>
 <script>
 const DATA = {"grupos": [{"floor": "1", "label": "Piso 1", "stores": [{"name": "101A", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "102CB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "103B", "anterior": 0, "days": {"Mar 21": 12, "Vie 24": 12}, "total": 24, "paid": false}, {"name": "103CB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "103DD", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "108CB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "110CB", "anterior": 0, "days": {"Lun 20": 17.5, "Mar 21": 21, "Mié 22": 12, "Vie 24": 12}, "total": 62.5, "paid": false}, {"name": "111C", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "111CB", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "113AB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "115AB", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "134B", "anterior": 0, "days": {"Mié 22": 12}, "total": 12, "paid": false}, {"name": "137B", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 24, "Vie 24": 12, "Sáb 25": 12}, "total": 60, "paid": false}, {"name": "142D", "anterior": 0, "days": {"Mar 21": 12}, "total": 12, "paid": false}, {"name": "143D", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "Amparo Gisset", "anterior": 0, "days": {"Lun 20": 3}, "total": 3, "paid": false}, {"name": "Chama Ever", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "Fermin", "anterior": 0, "days": {"Sáb 25": 18}, "total": 18, "paid": false}, {"name": "Gisset", "anterior": 19.5, "days": {"Mié 22": 12, "Vie 24": 12}, "total": 43.5, "paid": false}, {"name": "Gisset Amparo", "anterior": 0, "days": {"Mié 22": 5}, "total": 5, "paid": false}, {"name": "Gisset Flor", "anterior": 0, "days": {"Mié 22": 2.5}, "total": 2.5, "paid": false}, {"name": "Laura", "anterior": 0, "days": {"Sáb 25": 18}, "total": 18, "paid": false}, {"name": "Nichi", "anterior": 0, "days": {"Mar 21": 22, "Mié 22": 24, "Vie 24": 24, "Sáb 25": 36}, "total": 106, "paid": false}, {"name": "Tombo", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}]}, {"floor": "2", "label": "Piso 2", "stores": [{"name": "202B", "anterior": 0, "days": {"Lun 20": 10.5}, "total": 10.5, "paid": false}, {"name": "204D", "anterior": 0, "days": {"Lun 20": 11, "Sáb 25": 11}, "total": 22, "paid": false}, {"name": "206BB", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 11, "Mié 22": 11, "Vie 24": 11, "Sáb 25": 11}, "total": 56, "paid": false}, {"name": "207AB", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "207BB", "anterior": 0, "days": {"Vie 24": 24}, "total": 24, "paid": false}, {"name": "209C", "anterior": 0, "days": {"Mar 21": 11, "Mié 22": 11, "Vie 24": 11, "Sáb 25": 11}, "total": 44, "paid": false}, {"name": "209CB", "anterior": 0, "days": {"Mié 22": 12, "Vie 24": 11, "Sáb 25": 42}, "total": 65, "paid": false}, {"name": "210AB", "anterior": 0, "days": {"Sáb 25": 22}, "total": 22, "paid": false}, {"name": "215D", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12}, "total": 24, "paid": false}, {"name": "231D", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "233B", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "236B", "anterior": 0, "days": {"Mar 21": 5}, "total": 5, "paid": false}, {"name": "239B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "241B I", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "245D", "anterior": 0, "days": {"Lun 20": 12, "Sáb 25": 11}, "total": 23, "paid": false}, {"name": "246D", "anterior": 0, "days": {"Lun 20": 3, "Mié 22": 3, "Vie 24": 10}, "total": 16, "paid": false}, {"name": "250B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "253B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "257B", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "259B", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 11, "Mié 22": 11, "Vie 24": 11}, "total": 45, "paid": false}, {"name": "266B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "269B", "anterior": 0, "days": {"Mar 21": 11, "Mié 22": 12, "Sáb 25": 12}, "total": 35, "paid": false}, {"name": "276B", "anterior": 0, "days": {"Lun 20": 12}, "total": 12, "paid": false}, {"name": "A209AB", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "Celia", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 28, "Mié 22": 15, "Vie 24": 12, "Sáb 25": 12}, "total": 79, "paid": false}, {"name": "Covins", "anterior": 0, "days": {"Lun 20": 18}, "total": 18, "paid": false}, {"name": "Pers 209BB", "anterior": 12, "days": {}, "total": 12, "paid": false}, {"name": "Pini", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}]}, {"floor": "3", "label": "Piso 3", "stores": [{"name": "303B", "anterior": 568, "days": {"Lun 20": 37.5, "Mar 21": 24, "Mié 22": 25.5, "Vie 24": 33.5, "Sáb 25": 24}, "total": 712.5, "paid": false}, {"name": "307BB", "anterior": 31, "days": {"Lun 20": 5.5, "Vie 24": 6}, "total": 42.5, "paid": false}, {"name": "307CB", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12}, "total": 36, "paid": false}, {"name": "308A", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "308AB", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 11}, "total": 23, "paid": false}, {"name": "308B", "anterior": 0, "days": {"Mié 22": 24, "Vie 24": 12, "Sáb 25": 12}, "total": 48, "paid": false}, {"name": "308BB", "anterior": 0, "days": {"Mié 22": 6, "Sáb 25": 12}, "total": 18, "paid": false}, {"name": "309B", "anterior": 31, "days": {"Lun 20": 25.5, "Mar 21": 24, "Mié 22": 24, "Sáb 25": 36}, "total": 140.5, "paid": false}, {"name": "309BB", "anterior": 0, "days": {"Mar 21": 17}, "total": 17, "paid": false}, {"name": "309CB", "anterior": 836.5, "days": {"Lun 20": 12, "Mar 21": 12, "Sáb 25": 12}, "total": 872.5, "paid": false}, {"name": "313C", "anterior": 0, "days": {"Lun 20": 12, "Mié 22": 12, "Vie 24": 17.5}, "total": 41.5, "paid": false}, {"name": "315D", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "317B", "anterior": 0, "days": {"Lun 20": 17, "Mié 22": 13.5}, "total": 30.5, "paid": false}, {"name": "317C", "anterior": 0, "days": {"Lun 20": 12}, "total": 12, "paid": false}, {"name": "317D", "anterior": 0, "days": {"Lun 20": 18}, "total": 18, "paid": false}, {"name": "319C", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "319CB", "anterior": 0, "days": {"Lun 20": 11, "Mar 21": 11, "Mié 22": 11, "Vie 24": 11, "Sáb 25": 11}, "total": 55, "paid": false}, {"name": "322D", "anterior": 0, "days": {"Vie 24": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "323C", "anterior": 0, "days": {"Lun 20": 12, "Mié 22": 12}, "total": 24, "paid": false}, {"name": "324D", "anterior": 0, "days": {"Mar 21": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "326C", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "330B", "anterior": 43, "days": {}, "total": 43, "paid": false}, {"name": "333B", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "338B", "anterior": 0, "days": {"Mar 21": 16, "Vie 24": 12, "Sáb 25": 23}, "total": 51, "paid": false}, {"name": "338BB", "anterior": 66, "days": {}, "total": 66, "paid": false}, {"name": "354B", "anterior": 9.5, "days": {}, "total": 9.5, "paid": false}, {"name": "357D", "anterior": 30, "days": {}, "total": 30, "paid": false}, {"name": "368B", "anterior": 0, "days": {"Sáb 25": 48}, "total": 48, "paid": false}, {"name": "372B", "anterior": 0, "days": {"Vie 24": 24}, "total": 24, "paid": false}, {"name": "373B", "anterior": 0, "days": {"Vie 24": 8}, "total": 8, "paid": false}, {"name": "Amel", "anterior": 0, "days": {"Mié 22": 6}, "total": 6, "paid": false}, {"name": "Baño 3er piso", "anterior": 0, "days": {"Sáb 25": 12}, "total": 12, "paid": false}, {"name": "Bella", "anterior": 0, "days": {"Mar 21": 12, "Sáb 25": 21.5}, "total": 33.5, "paid": false}, {"name": "Carlos", "anterior": 175, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 12}, "total": 235, "paid": false}, {"name": "Carmen", "anterior": 5.5, "days": {}, "total": 5.5, "paid": false}, {"name": "Eli", "anterior": 0, "days": {"Sáb 25": 11}, "total": 11, "paid": false}, {"name": "Eliane", "anterior": 0, "days": {"Mar 21": 9}, "total": 9, "paid": false}, {"name": "Ever", "anterior": 0, "days": {"Mar 21": 5}, "total": 5, "paid": false}, {"name": "Fredy", "anterior": 31, "days": {}, "total": 31, "paid": false}, {"name": "Gaston Carmen", "anterior": 0, "days": {"Lun 20": 11}, "total": 11, "paid": false}, {"name": "Hayde", "anterior": 0, "days": {"Mié 22": 3}, "total": 3, "paid": false}, {"name": "Hilos", "anterior": 0, "days": {"Mié 22": 22, "Vie 24": 11}, "total": 33, "paid": false}, {"name": "Isabel", "anterior": 0, "days": {"Mar 21": 12}, "total": 12, "paid": false}, {"name": "Jose", "anterior": 20, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 12}, "total": 80, "paid": false}, {"name": "Junior", "anterior": 0, "days": {"Sáb 25": 15}, "total": 15, "paid": false}, {"name": "Magaly", "anterior": 16, "days": {}, "total": 16, "paid": false}, {"name": "Patty", "anterior": 76, "days": {}, "total": 76, "paid": false}, {"name": "Ronald", "anterior": 21, "days": {"Lun 20": 15, "Mar 21": 6.5, "Vie 24": 3}, "total": 45.5, "paid": false}, {"name": "Rosita", "anterior": 30, "days": {"Lun 20": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 18}, "total": 84, "paid": false}, {"name": "Sobrino Maribel", "anterior": 0, "days": {"Mar 21": 3}, "total": 3, "paid": true}, {"name": "Walter", "anterior": 0, "days": {"Lun 20": 5, "Mié 22": 5}, "total": 10, "paid": false}, {"name": "Yovana Yovera", "anterior": 0, "days": {"Mar 21": 7, "Sáb 25": 12}, "total": 19, "paid": false}]}, {"floor": "4", "label": "Piso 4", "stores": [{"name": "406A", "anterior": 0, "days": {"Mié 22": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "409A", "anterior": 0, "days": {"Vie 24": 11.5, "Sáb 25": 12}, "total": 23.5, "paid": false}, {"name": "411A", "anterior": 0, "days": {"Mié 22": 12}, "total": 12, "paid": false}, {"name": "415A", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "416BB", "anterior": 0, "days": {"Mié 22": 12, "Vie 24": 12}, "total": 24, "paid": false}, {"name": "438E", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 24, "Vie 24": 12, "Sáb 25": 23}, "total": 71, "paid": false}, {"name": "439E", "anterior": 0, "days": {"Mié 22": 3}, "total": 3, "paid": false}, {"name": "442E", "anterior": 0, "days": {"Lun 20": 22, "Mar 21": 11, "Mié 22": 22, "Sáb 25": 11}, "total": 66, "paid": false}, {"name": "4to Roxana", "anterior": 30, "days": {}, "total": 30, "paid": false}, {"name": "Norma", "anterior": 0, "days": {"Mié 22": 12, "Sáb 25": 12}, "total": 24, "paid": false}, {"name": "Uchu", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12}, "total": 36, "paid": false}]}, {"floor": "Fuera", "label": "Fuera de galería", "stores": [{"name": "Canepa 131", "anterior": 0, "days": {"Mar 21": 12, "Mié 22": 12}, "total": 24, "paid": false}, {"name": "Canepa 5", "anterior": 0, "days": {"Vie 24": 12}, "total": 12, "paid": false}, {"name": "Chavez", "anterior": 0, "days": {"Sáb 25": 24}, "total": 24, "paid": false}, {"name": "Leo Galerias", "anterior": 0, "days": {"Mié 22": 26}, "total": 26, "paid": false}, {"name": "Mezanine", "anterior": 0, "days": {"Lun 20": 12, "Mar 21": 12, "Mié 22": 12, "Vie 24": 12, "Sáb 25": 24}, "total": 72, "paid": false}, {"name": "Rosa", "anterior": 0, "days": {"Mar 21": 22, "Mié 22": 22, "Vie 24": 11}, "total": 55, "paid": false}]}]};
 const KEY='cobro_2026-07-20';
+const ALIAS_CLIENTES={
+  'gisset':'Gisset Flor',
+  'gisset flor':'Gisset Flor',
+  'flor gisset':'Gisset Flor'
+};
+const canon=n=>ALIAS_CLIENTES[String(n||'').trim().toLocaleLowerCase('es-PE')]||String(n||'').trim();
 let state=JSON.parse(localStorage.getItem(KEY)||'{}');
-const money=n=>'S/ '+(Math.round(n*100)/100).toLocaleString('es-PE',{minimumFractionDigits:(n%1?2:0),maximumFractionDigits:2});
+if(!Array.isArray(state._manual))state._manual=[];
+const money=n=>'S/ '+(Math.round(Number(n||0)*100)/100).toLocaleString('es-PE',{minimumFractionDigits:(Number(n||0)%1?2:0),maximumFractionDigits:2});
 function save(){localStorage.setItem(KEY,JSON.stringify(state))}
-function st(name){return state[name]||{status:'pendiente',recibido:0}}
-DATA.grupos.forEach(g=>g.stores.forEach(s=>{if(s.paid&&!state[s.name])state[s.name]={status:'pagado',recibido:s.total}}));save();
-function cobradoDe(s){const x=st(s.name);if(x.status==='pagado')return s.total;if(x.status==='parcial')return x.recibido;return 0}
+function mergeData(){
+  const groups=new Map();
+  DATA.grupos.forEach(g=>groups.set(g.floor,{floor:g.floor,label:g.label,stores:[]}));
+  if(!groups.has('Fuera'))groups.set('Fuera',{floor:'Fuera',label:'Fuera de galería',stores:[]});
+  const idx=new Map();
+  function add(raw,floor,label){
+    const name=canon(raw.name); const key=name.toLocaleLowerCase('es-PE');
+    let s=idx.get(key);
+    if(!s){s={name,anterior:0,days:{},total:0,paid:false,notes:[],floor};idx.set(key,s);(groups.get(floor)||groups.get('Fuera')).stores.push(s)}
+    s.anterior+=Number(raw.anterior||0);
+    Object.entries(raw.days||{}).forEach(([d,v])=>s.days[d]=(s.days[d]||0)+Number(v||0));
+    if(raw.concept){const day=raw.date||'Cuenta manual';s.days[day]=(s.days[day]||0)+Number(raw.amount||0)}
+    if(raw.note)s.notes.push(raw.note);
+    s.paid=s.paid||!!raw.paid;
+    s.total=s.anterior+Object.values(s.days).reduce((a,v)=>a+Number(v||0),0);
+  }
+  DATA.grupos.forEach(g=>g.stores.forEach(s=>add(s,g.floor,g.label)));
+  state._manual.forEach(m=>add({name:m.name,amount:m.amount,concept:m.concept,date:m.dateLabel||'Cuenta manual',note:m.note},m.floor||'Fuera'));
+  return {grupos:[...groups.values()].filter(g=>g.stores.length)};
+}
+let APP_DATA=mergeData();
+function migrateAliases(){
+  const aliases=['Gisset','Gisset Flor','Flor Gisset'];
+  const found=aliases.map(k=>state[k]).filter(Boolean);
+  if(found.length){
+    const received=found.reduce((a,x)=>a+Number(x.recibido||0),0);
+    const notes=found.map(x=>x.note).filter(Boolean).join(' · ');
+    const promised=found.map(x=>x.promisedDate).filter(Boolean).sort().pop()||'';
+    const total=(APP_DATA.grupos.flatMap(g=>g.stores).find(s=>s.name==='Gisset Flor')||{}).total||0;
+    state['Gisset Flor']={status:received>=total&&total>0?'pagado':received>0?'parcial':found.some(x=>x.status==='otro_dia')?'otro_dia':'pendiente',recibido:received,note:notes,promisedDate:promised};
+    aliases.filter(k=>k!=='Gisset Flor').forEach(k=>delete state[k]);
+  }
+}
+migrateAliases();
+APP_DATA.grupos.forEach(g=>g.stores.forEach(s=>{if(s.paid&&!state[s.name])state[s.name]={status:'pagado',recibido:s.total,note:'',promisedDate:''}}));save();
+function st(name){return state[canon(name)]||{status:'pendiente',recibido:0,note:'',promisedDate:''}}
+function cobradoDe(s){const x=st(s.name);if(x.status==='pagado')return Math.min(Number(x.recibido||s.total),s.total);if(x.status==='parcial')return Math.min(Number(x.recibido||0),s.total);return 0}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function render(){
+  APP_DATA=mergeData();
   const app=document.getElementById('app');app.innerHTML='';
   let all=[],grand=0,cob=0,done=0;
-  DATA.grupos.forEach(g=>g.stores.forEach(s=>{all.push(s);grand+=s.total;cob+=cobradoDe(s);const q=st(s.name).status;if(q==='pagado'||q==='parcial')done++}));
-  DATA.grupos.forEach(g=>{
+  APP_DATA.grupos.forEach(g=>g.stores.forEach(s=>{all.push(s);grand+=s.total;cob+=cobradoDe(s);const q=st(s.name).status;if(q==='pagado')done++}));
+  APP_DATA.grupos.forEach(g=>{
     const pend=g.stores.reduce((a,s)=>a+(s.total-cobradoDe(s)),0);
     const falta=g.stores.filter(s=>st(s.name).status!=='pagado').length;
     const d=document.createElement('details');d.className='floor';
-    d.innerHTML='<summary><span>'+g.label+'</span><span class="fmeta">'+money(pend)+' · faltan '+falta+'</span></summary>';
+    d.innerHTML='<summary><span>'+esc(g.label)+'</span><span class="fmeta">'+money(pend)+' · faltan '+falta+'</span></summary>';
     g.stores.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(s=>{
-      const x=st(s.name);const saldo=s.total-x.recibido;
+      const x=st(s.name);const saldo=Math.max(0,s.total-Number(x.recibido||0));
       const div=document.createElement('div');div.className='store '+x.status;div.dataset.name=s.name;
-      let tag='';if(x.status==='pagado')tag='<span class="stag">Pagó</span>';else if(x.status==='parcial')tag='<span class="stag">Saldo '+money(saldo)+'</span>';
-      let det='';Object.entries(s.days).forEach(([k,v])=>det+='<div class="line"><span>'+k+'</span><span>'+money(v)+'</span></div>');
+      let tag='';if(x.status==='pagado')tag='<span class="stag">Pagó</span>';else if(x.status==='parcial')tag='<span class="stag">Saldo '+money(saldo)+'</span>';else if(x.status==='otro_dia')tag='<span class="stag">Otro día'+(x.promisedDate?' · '+esc(x.promisedDate):'')+'</span>';
+      let det='';Object.entries(s.days).forEach(([k,v])=>det+='<div class="line"><span>'+esc(k)+'</span><span>'+money(v)+'</span></div>');
       if(s.anterior>0)det+='<div class="line anterior"><span>Saldo anterior</span><span>'+money(s.anterior)+'</span></div>';
       det+='<div class="line" style="font-weight:800;color:#111827"><span>Total</span><span>'+money(s.total)+'</span></div>';
-      let resHtml='';
-      if(x.status==='pagado'&&x.recibido>s.total)resHtml='<div class="result vuelto">Vuelto: '+money(x.recibido-s.total)+'</div>';
-      else if(x.status==='parcial')resHtml='<div class="result saldo">Falta: '+money(saldo)+'</div>';
-      div.innerHTML='<div class="storehead"><div class="check" data-check>'+(x.status==='pagado'?'✓':x.status==='parcial'?'½':'')+'</div>'+
-        '<div class="sname" data-open>'+s.name+tag+'</div><div class="samt">'+money(s.total)+'</div></div>'+
-        '<div class="detail">'+det+'<div class="pay"><label>¿Con cuánto pagó?</label><div class="payrow">'+
-        '<input type="number" inputmode="decimal" placeholder="0" value="'+(x.recibido||'')+'" data-input>'+
-        '<button class="btn exact" data-exact>Pagó exacto</button><button class="btn clear" data-clear>Borrar</button></div>'+resHtml+'</div></div>';
+      let resHtml='';if(x.status==='pagado'&&x.recibido>s.total)resHtml='<div class="result vuelto">Vuelto: '+money(x.recibido-s.total)+'</div>';else if(x.status==='parcial')resHtml='<div class="result saldo">Falta: '+money(saldo)+'</div>';
+      const icon=x.status==='pagado'?'✓':x.status==='parcial'?'½':x.status==='otro_dia'?'•':'';
+      div.innerHTML='<div class="storehead"><div class="check" data-check>'+icon+'</div><div class="sname" data-open>'+esc(s.name)+tag+'</div><div class="samt">'+money(s.total)+'</div></div><div class="detail">'+det+'<div class="pay"><label>¿Con cuánto pagó?</label><div class="payrow"><input type="number" inputmode="decimal" placeholder="0" value="'+(x.recibido||'')+'" data-input><button class="btn exact" data-exact>Pagó exacto</button><button class="btn clear" data-clear>Borrar</button></div>'+resHtml+'<div class="followup"><label>Observación</label><textarea class="notearea" data-note placeholder="Ej. dijo que paga el lunes">'+esc(x.note||s.notes.join(' · '))+'</textarea><div class="followrow"><input class="promise" type="date" value="'+esc(x.promisedDate||'')+'" data-date><button class="btn later" data-later>Otro día</button></div></div></div></div>';
       d.appendChild(div);
-    });
-    app.appendChild(d);
+    });app.appendChild(d);
   });
-  const rb=document.createElement('button');rb.className='reset';rb.textContent='Cerrar cobranza (reiniciar todo)';
-  rb.onclick=()=>{if(confirm('¿Borrar todos los pagos y empezar de nuevo?')){state={};DATA.grupos.forEach(g=>g.stores.forEach(s=>{if(s.paid)state[s.name]={status:'pagado',recibido:s.total}}));save();render()}};
-  app.appendChild(rb);
-  document.getElementById('cCobrado').textContent=money(cob);
-  document.getElementById('cFalta').textContent=money(grand-cob);
-  document.getElementById('cTiendas').textContent=done+' / '+all.length;
-  document.getElementById('cBar').style.width=(grand?Math.min(100,cob/grand*100):0)+'%';
+  const rb=document.createElement('button');rb.className='reset';rb.textContent='Cerrar cobranza (reiniciar pagos y notas)';rb.onclick=()=>{if(confirm('¿Borrar pagos, estados y observaciones? Las cuentas manuales se conservarán.')){const manual=state._manual;state={_manual:manual};save();render()}};app.appendChild(rb);
+  document.getElementById('cCobrado').textContent=money(cob);document.getElementById('cFalta').textContent=money(grand-cob);document.getElementById('cTiendas').textContent=done+' / '+all.length;document.getElementById('cBar').style.width=(grand?Math.min(100,cob/grand*100):0)+'%';
 }
-function reopen(name){const el=document.querySelector('.store[data-name="'+CSS.escape(name)+'"]');if(el)el.classList.add('open')}
+function findStore(name){return APP_DATA.grupos.flatMap(g=>g.stores).find(x=>x.name===name)}
+function reopen(name){const el=[...document.querySelectorAll('.store')].find(x=>x.dataset.name===name);if(el){el.closest('details').open=true;el.classList.add('open')}}
 document.getElementById('app').addEventListener('click',e=>{
-  const store=e.target.closest('.store');if(!store)return;const name=store.dataset.name;
-  const s=DATA.grupos.flatMap(g=>g.stores).find(x=>x.name===name);
-  if(e.target.closest('[data-check]')){const c=st(name);state[name]=c.status==='pagado'?{status:'pendiente',recibido:0}:{status:'pagado',recibido:s.total};save();render();return}
+  const store=e.target.closest('.store');if(!store)return;const name=store.dataset.name;const s=findStore(name);const old=st(name);
+  if(e.target.closest('[data-check]')){state[name]=old.status==='pagado'?{...old,status:'pendiente',recibido:0}:{...old,status:'pagado',recibido:s.total};save();render();return}
   if(e.target.closest('[data-open]')){store.classList.toggle('open');return}
-  if(e.target.closest('[data-exact]')){state[name]={status:'pagado',recibido:s.total};save();render();reopen(name);return}
-  if(e.target.closest('[data-clear]')){state[name]={status:'pendiente',recibido:0};save();render();reopen(name);return}
+  if(e.target.closest('[data-exact]')){state[name]={...old,status:'pagado',recibido:s.total};save();render();reopen(name);return}
+  if(e.target.closest('[data-clear]')){state[name]={status:'pendiente',recibido:0,note:old.note||'',promisedDate:''};save();render();reopen(name);return}
+  if(e.target.closest('[data-later]')){const date=store.querySelector('[data-date]').value;const note=store.querySelector('[data-note]').value.trim();state[name]={...old,status:'otro_dia',recibido:0,note,promisedDate:date};save();render();reopen(name);return}
 });
 document.getElementById('app').addEventListener('change',e=>{
-  const inp=e.target.closest('[data-input]');if(!inp)return;
-  const name=e.target.closest('.store').dataset.name;
-  const s=DATA.grupos.flatMap(g=>g.stores).find(x=>x.name===name);
-  const r=parseFloat(inp.value)||0;
-  if(r<=0)state[name]={status:'pendiente',recibido:0};
-  else if(r>=s.total)state[name]={status:'pagado',recibido:r};
-  else state[name]={status:'parcial',recibido:r};
-  save();render();reopen(name);
+  const store=e.target.closest('.store');if(!store)return;const name=store.dataset.name;const s=findStore(name);const old=st(name);
+  if(e.target.matches('[data-input]')){const r=parseFloat(e.target.value)||0;state[name]={...old,status:r<=0?'pendiente':r>=s.total?'pagado':'parcial',recibido:r};save();render();reopen(name)}
+  if(e.target.matches('[data-date]')){state[name]={...old,promisedDate:e.target.value};save()}
 });
+document.getElementById('app').addEventListener('input',e=>{if(e.target.matches('[data-note]')){const name=e.target.closest('.store').dataset.name;state[name]={...st(name),note:e.target.value};save()}});
+document.getElementById('showAdd').onclick=()=>document.getElementById('addForm').hidden=false;
+document.getElementById('cancelAdd').onclick=()=>document.getElementById('addForm').hidden=true;
+document.getElementById('addForm').onsubmit=e=>{e.preventDefault();const name=canon(document.getElementById('newName').value);const amount=parseFloat(document.getElementById('newAmount').value);if(!name||!(amount>0))return;state._manual.push({id:Date.now(),name,amount,floor:document.getElementById('newFloor').value,concept:document.getElementById('newConcept').value.trim()||'Cuenta manual',note:document.getElementById('newNote').value.trim(),dateLabel:new Date().toLocaleDateString('es-PE')});save();e.target.reset();e.target.hidden=true;render();};
+render();
 render();
 </script></body></html>
